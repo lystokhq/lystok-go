@@ -1,7 +1,7 @@
 // Package lystok is the official Go library for the Lystok email API: send transactional email,
 // keep contacts in step and check webhooks.
 //
-//	client, err := lystok.New("") // reads LYSTOK_API_KEY
+//	client, err := lystok.New(os.Getenv("LYSTOK_API_KEY")) // your key, from wherever you keep it
 //	if err != nil {
 //		log.Fatal(err)
 //	}
@@ -25,7 +25,6 @@ import (
 	"math/rand/v2"
 	"net"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -85,14 +84,12 @@ func WithHTTPClient(hc *http.Client) Option {
 	}
 }
 
-// New makes a client. apiKey is an API key from Settings → For developers; when empty, the
-// LYSTOK_API_KEY environment variable is used.
+// New makes a client. apiKey is an API key from Settings → For developers (lk_live_…); New
+// returns an error when it is empty. Read it from wherever you keep secrets: the library itself
+// never looks at the environment.
 func New(apiKey string, opts ...Option) (*Client, error) {
-	if apiKey == "" {
-		apiKey = os.Getenv("LYSTOK_API_KEY")
-	}
-	if apiKey == "" {
-		return nil, errors.New("lystok: missing API key: pass it to lystok.New or set LYSTOK_API_KEY")
+	if strings.TrimSpace(apiKey) == "" {
+		return nil, errors.New("lystok: missing API key: pass your Lystok API key (lk_live_…) to lystok.New")
 	}
 	c := &Client{
 		apiKey:     apiKey,

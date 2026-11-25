@@ -109,22 +109,13 @@ func asLystokError(t *testing.T, err error) *lystok.Error {
 
 var ctx = context.Background()
 
-func TestNeedsAnAPIKey(t *testing.T) {
-	t.Setenv("LYSTOK_API_KEY", "")
-	if _, err := lystok.New(""); err == nil || !strings.Contains(err.Error(), "missing API key") {
-		t.Fatalf("got %v", err)
-	}
+func TestRefusesAnEmptyAPIKey(t *testing.T) {
+	// The environment is never read, even when it holds a key.
 	t.Setenv("LYSTOK_API_KEY", "lk_live_from_env")
-	api := newFakeAPI(t, answer{status: 200, body: map[string]any{"id": "e1"}})
-	c, err := lystok.New("", lystok.WithBaseURL(api.server.URL))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := c.Emails.Get(ctx, "e1"); err != nil {
-		t.Fatal(err)
-	}
-	if got := api.Calls()[0].header.Get("Authorization"); got != "Bearer lk_live_from_env" {
-		t.Fatalf("Authorization %q", got)
+	for _, key := range []string{"", "   "} {
+		if _, err := lystok.New(key); err == nil || !strings.Contains(err.Error(), "missing API key") {
+			t.Fatalf("New(%q): got %v", key, err)
+		}
 	}
 }
 

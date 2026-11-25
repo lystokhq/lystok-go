@@ -21,7 +21,7 @@ func live(t *testing.T) (*lystok.Client, func(subject string) lystok.SendEmailPa
 	if os.Getenv("LYSTOK_LIVE") != "1" {
 		t.Skip("set LYSTOK_LIVE=1 to run")
 	}
-	client, err := lystok.New("", lystok.WithBaseURL(os.Getenv("LYSTOK_BASE_URL")))
+	client, err := lystok.New(os.Getenv("LYSTOK_API_KEY"), lystok.WithBaseURL(os.Getenv("LYSTOK_BASE_URL")))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -14,7 +14,7 @@ Create an API key in Lystok → Settings → For developers, and verify your sen
 ```go
 import lystok "github.com/lystokhq/lystok-go"
 
-client, err := lystok.New("") // reads LYSTOK_API_KEY
+client, err := lystok.New(os.Getenv("LYSTOK_API_KEY"))
 if err != nil {
 	log.Fatal(err)
 }
@@ -31,8 +31,9 @@ if err != nil {
 fmt.Println(sent.ID)
 ```
 
-`lystok.New("lk_live_…")` takes the key directly. Keys belong on your server: never put one in a
-browser or a mobile app. The client is safe for concurrent use: make one and share it.
+The key is always passed in: keep it wherever you keep secrets, under any name (`LYSTOK_API_KEY`
+above is only an example); the library never reads the environment itself. Keys belong on your
+server: never put one in a browser or a mobile app. The client is safe for concurrent use: make one and share it.
 
 ### With a template
 
